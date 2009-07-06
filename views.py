@@ -448,7 +448,7 @@ def backup_rows(request):
 	for model_name in kind_map:
 		model_classes.append(kind_map[model_name])
 		
-	Model = kind_map[current_model]
+	Model = kind_map[current_model.lower()]
 		
 	fields = Model.fields()
 	
@@ -548,7 +548,7 @@ def backup_rows(request):
 				
 		# Generate code: Check if entity already exists and delete it if it
 		# does, by bypassing standard delete logic, because it may be overridden.
-		code += u'\texisting_entity = %s.get(%s)\n' % (current_model, key_repr)
+		code += u'\texisting_entity = %s.get(%s)\n' % (current_model.split(u'-')[1], key_repr)
 		code += u'\tif existing_entity:\n'
 		#code += u'\t\texisting_entity.delete()\n'
 		code += u'\t\t_delete(existing_entity)\n'
@@ -693,7 +693,7 @@ def backup_rows(request):
 
 		# OK, all properties are ready, write out the row's constructor to create the row.
 		# code += u'\t%s = %s(key_name=%s%s%s%s)\n' % (row_name, current_model, key_name.__repr__(), properties_code, reference_fields_code, parent_code)
-		code += u'\t%s = %s(key_name=u"%s"%s%s%s)\n' % (row_name, current_model, key_name, properties_code, reference_fields_code, parent_code)
+		code += u'\t%s = %s(key_name=u"%s"%s%s%s)\n' % (row_name, current_model.split(u'_')[1], key_name, properties_code, reference_fields_code, parent_code)
 
 		# Does this row belong to an Expando model? (It's OK to put Expoando properties after the 
 		# constructor as they cannot be required.)
@@ -1097,7 +1097,7 @@ def get_restore_info(request):
 
 	# logging.info('Restore start called for folder ' + folder_name)
 	
-	secret = urlquote(settings.GAEBAR_SECRET_KEY)	
+	secret = settings.GAEBAR_SECRET_KEY
 
 	logging.info('Starting to restore ' + folder_name + '...')
 
